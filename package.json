@@ -10,16 +10,40 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:touchbar-pro.helloWorld"
+        "*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "touchbar-pro.helloWorld",
-                "title": "Hello World"
+				"command": "touchbar-pro.runAndroid",
+                "title": "Run Android"
+			},
+			{
+				"command": "touchbar-pro.runIos",
+                "title": "Run iOS"
+			},
+			{
+				"command": "touchbar-pro.cleanGradlew",
+                "title": "Clean gradlew"
 			}
-		]
+		],
+		"menus": {
+			"touchBar": [
+				{
+					"command": "touchbar-pro.runAndroid",
+					"group": "react-native-run"
+				},
+				{
+					"command": "touchbar-pro.runIos",
+					"group": "react-native-run"
+				},
+				{
+					"command": "touchbar-pro.cleanGradlew",
+					"group": "react-native-tools"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",

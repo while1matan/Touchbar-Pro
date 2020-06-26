@@ -2,26 +2,59 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+class Terminal {
+	static terminalName: string = 'touchbar-pro';
+	static _terminal: vscode.Terminal | null;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "touchbar-pro" is now active!');
+	static getTerminal() {
+		if (!Terminal._terminal) {
+			Terminal._terminal = vscode.window.createTerminal(Terminal.terminalName);
+
+			vscode.window.onDidCloseTerminal(event => {
+				if (Terminal.getTerminal() && event.name === Terminal.terminalName) {
+					Terminal._terminal = null;
+				}
+			});
+		}
+
+		return Terminal._terminal;
+	}
+
+	static run(command: string) {
+		const terminal = Terminal.getTerminal();
+		terminal.show();
+		terminal.sendText(command, true);
+	}
+
+	static dispose() {
+		if (Terminal.getTerminal()) {
+			Terminal.getTerminal().dispose();
+			Terminal._terminal = null;
+		}
+	}
+}
+
+// this method is called when your extension is activated
+export function activate(context: vscode.ExtensionContext) {
+	console.log('"touchbar-pro" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('touchbar-pro.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from touchbar-pro!');
+	let runAndroid = vscode.commands.registerCommand('touchbar-pro.runAndroid', () => {
+		Terminal.run('npx react-native run-android');
 	});
 
-	context.subscriptions.push(disposable);
+	let runIos = vscode.commands.registerCommand('touchbar-pro.runIos', () => {
+		Terminal.run('npx react-native run-ios');
+	});
+
+	let cleanGradlew = vscode.commands.registerCommand('touchbar-pro.cleanGradlew', () => {
+		Terminal.run('cd android &&./gradlew clean &&cd ..');
+	});
+
+	context.subscriptions.push(runAndroid, runIos, cleanGradlew);
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
